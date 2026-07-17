@@ -1,27 +1,79 @@
-from .commands import Move
-from .commands import Line
-from .commands import PenUp
-from .commands import PenDown
+"""
+geometry.py
+
+Modello geometrico interno di GhostWriter.
+
+Tutto il progetto lavora esclusivamente con queste classi.
+
+TESTO
+SVG
+DXF
+QR CODE
+LOGHI
+
+↓
+
+Document
+
+↓
+
+GCode
+"""
+
+from dataclasses import dataclass, field
 
 
-def square(x, y, side):
+@dataclass(slots=True)
+class Point:
+    x: float
+    y: float
 
-    return [
 
-        PenUp(),
+@dataclass(slots=True)
+class Path:
+    """
+    Un tratto continuo.
 
-        Move(x, y),
+    La penna viene abbassata sul primo punto,
+    percorre tutti i punti,
+    poi viene rialzata.
+    """
 
-        PenDown(),
+    points: list[Point] = field(default_factory=list)
 
-        Line(x + side, y),
+    def add(self, x: float, y: float):
+        self.points.append(Point(float(x), float(y)))
 
-        Line(x + side, y + side),
+    @property
+    def empty(self):
+        return len(self.points) == 0
 
-        Line(x, y + side),
+    @property
+    def start(self):
+        return self.points[0]
 
-        Line(x, y),
+    @property
+    def end(self):
+        return self.points[-1]
 
-        PenUp()
 
-    ]
+@dataclass(slots=True)
+class Document:
+    """
+    Un documento è una collezione di Path.
+
+    Ogni Path rappresenta una linea continua.
+    """
+
+    paths: list[Path] = field(default_factory=list)
+
+    def add_path(self, path: Path):
+
+        if not path.empty:
+            self.paths.append(path)
+
+    def clear(self):
+        self.paths.clear()
+
+    def __len__(self):
+        return len(self.paths)
