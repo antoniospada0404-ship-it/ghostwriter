@@ -1,17 +1,33 @@
-from ghostwriter.geometry import *
+from ghostwriter.geometry import Document, Path
 
-doc = Document()
 
-p = Path()
+def test_create_document():
+    doc = Document()
 
-p.add(10, 10)
-p.add(50, 10)
-p.add(50, 50)
-p.add(10, 50)
-p.add(10, 10)
+    path = Path()
 
-doc.add_path(p)
+    path.add(10, 10)
+    path.add(50, 10)
+    path.add(50, 50)
+    path.add(10, 50)
+    path.add(10, 10)
 
-print(len(doc))
-print(doc.paths[0].start)
-print(doc.paths[0].end)
+    doc.add_path(path)
+
+    assert len(doc) == 1
+    assert len(doc.paths[0].points) == 5
+
+
+def test_path_start_and_end():
+
+    path = Path()
+
+    path.add(10, 10)
+    path.add(50, 10)
+    path.add(50, 50)
+
+    assert path.start.x == 10.0
+    assert path.start.y == 10.0
+
+    assert path.end.x == 50.0
+    assert path.end.y == 50.0
